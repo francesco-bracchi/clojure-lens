@@ -55,14 +55,17 @@
 
 
 (defn sum
-  [& ls]
-  (fn [nxt]
-    (let [xs (->> ls (map #(% nxt)) (vec))]
-      (fn
-        ([v] (->> xs (map #(% v)) (reduce concat)))
-        ([v f] (reduce #(or (%2 %1 f) %1) v xs))))))
+  ([] zero)
+  ([l] l)
+  ([l & ls]
+   (fn [nxt]
+     (let [xs (->> ls (cons l) (map #(% nxt)) (vec))]
+       (fn
+         ([v] (->> xs (map #(% v)) (reduce concat)))
+         ([v f] (reduce #(or (%2 %1 f) %1) v xs)))))))
 
 
-(defn product
-  [& ls]
-  (apply comp ls))
+(defn prod
+  ([] one)
+  ([l] l)
+  ([l & ls] (reduce comp l ls)))

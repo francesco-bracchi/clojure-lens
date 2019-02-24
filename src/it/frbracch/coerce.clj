@@ -38,12 +38,15 @@
 
 
 (defn lens
-  ([] base/one)
-  ([l] (to-lens l))
-  ([l0 l1] (comp (to-lens l0) (to-lens l1)))
-  ([l0 l1 l2] (comp (to-lens l0) (to-lens l1) (to-lens l2)))
-  ([l0 l1 l2 & ls]
-   (->> ls
-        (concat [l0 l1 l2])
-        (map to-lens)
-        (reduce comp))))
+  [& ls]
+  (->> ls (map to-lens) (apply base/product)))
+
+
+(defn par
+  [& ls]
+  (->> ls (map to-lens) (apply base/sum)))
+
+
+;; (lens :a (par :b :c) :d)
+
+;; (* :a (+ :b :c) :d)
