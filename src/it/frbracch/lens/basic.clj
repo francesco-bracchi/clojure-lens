@@ -1,8 +1,8 @@
-(ns it.frbracch.core
+(ns it.frbracch.lens.basic
   (:refer-clojure :exclude [filter remove regex keys vals])
-  (:require [clojure.core :as core]
+  (:require [clojure.core :as clj]
             [clojure.string :as string]
-            [it.frbracch.base :as base]))
+            [it.frbracch.lens.core :as core]))
 
 
 (defn ^:lens at
@@ -26,7 +26,7 @@
   [t?]
   (fn [nxt]
     (fn
-      ([v] (->> v (core/filter t?) (map nxt) (reduce concat)))
+      ([v] (->> v (clj/filter t?) (map nxt) (reduce concat)))
       ([v f] (->> v
                   (map #(if (t? %) (nxt % f) %))
                   (into (empty v)))))))
@@ -35,7 +35,7 @@
 (defn ^:lens keys
   [nxt]
   (fn
-    ([v] (->> v core/keys (map nxt) (reduce concat)))
+    ([v] (->> v clj/keys (map nxt) (reduce concat)))
     ([v f] (->> v
                 (map (fn [[k v]] [(nxt k f) v]))
                 (into (empty v))))))
@@ -44,7 +44,7 @@
 (defn ^:lens vals
   [nxt]
   (fn
-    ([v] (->> v core/vals (map nxt) (reduce concat)))
+    ([v] (->> v clj/vals (map nxt) (reduce concat)))
     ([v f] (->> v
                 (map (fn [[k v]] [k (nxt v f)]))
                 (into (empty v))))))
@@ -63,7 +63,7 @@
       ([v f] (string/replace v re #(nxt % f))))))
 
 
-(def  ^:lens whole base/zero)
+(def  ^:lens zero core/zero)
 
 
-(def  ^:lens nothing base/one)
+(def  ^:lens one  core/one)
